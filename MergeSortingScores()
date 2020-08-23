@@ -1,0 +1,24 @@
+def MergeSortingScores (Scores):
+    if len(Scores)>1: # if the length of scores is bigger than one then
+        mid = len(Scores)//2 # the middle point is the length of score divided by 2
+        lefthalf = Scores[:mid] #left half equals the left half of the score, this will be used later
+        righthalf = Scores[mid:] #right half equals the right half of the score, this will be used later
+        MergeSortingScores(lefthalf) # I call recursion on the left half
+        MergeSortingScores(righthalf) #  after I have finished
+        i,j,k = 0,0,0
+        while i < len(lefthalf) and j < len(righthalf):
+            if lefthalf[i][1] > righthalf[j][1]:
+                Scores[k]=lefthalf[i]
+                i=i+1
+            else:
+                Scores[k]=righthalf[j]
+                j=j+1
+            k=k+1
+        while i < len(lefthalf):
+            Scores[k]=lefthalf[i]
+            i=i+1
+            k=k+1
+        while j < len(righthalf):
+            Scores[k]=righthalf[j]
+            j=j+1
+            k=k+1
