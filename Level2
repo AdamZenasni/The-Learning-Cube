@@ -1,0 +1,117 @@
+class Level2(tk.Frame):
+    def __init__(self, parent,controller):
+        tk.Frame.__init__(self,parent)
+        self.configure(background= "#a1dbcd")
+        self.parent = parent
+        self.Photo = tk.PhotoImage(file="JustTheLogo.gif")
+        photo = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        Title = tk.Label(self, image=photo, background="#a1dbcd")
+        Title.image = photo
+        Title.grid(row=0, column=1, columnspan=6)
+        Logo = tk.PhotoImage(file = r"JustTheLogo.gif")
+        LogoLabel1 = tk.Label(self, image = Logo, background = "#a1dbcd")
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row = 0, column = 0)
+        LogoLabel2 = tk.Label(self, image = Logo, background = "#a1dbcd")
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row = 0, column = 7)
+        LevelLabel = tk.Label(self, text=("THIS IS LEVEL TWO")
+                              , font=REALLY_LARGE_FONT, bg="#a1dbcd")
+        LevelLabel.grid(pady=10, padx=10, row=1, column=1, columnspan=6)
+        self.buttons = [[tk.Button(self, command=lambda row=row, column=column: self.CardPicked(row, column,controller, parent),
+                                   width=14, height=9)
+                         for column in range(6)] for row in range(3)]
+        for row in range(3):
+            for column in range(6):
+                self.buttons[row][column].grid(row=row + 2, column=column + 1)
+        self.tobechecked = None
+        self.Attempts = 0
+        self.create_cards()
+
+    def create_cards(self):
+        numberlist = []
+        for i in range(9):
+            number = (randint(0, 9))
+            number2 = (randint(0, 9))
+            signs = ("+", "*")
+            self.signchosen = (random.choice(signs))
+            if self.signchosen == "*":
+                answertobeaddedtolist = number * number2
+            else:
+                answertobeaddedtolist = number + number2
+            numbertoaddtolist = (number, self.signchosen, number2)
+            numberlist.append(numbertoaddtolist)
+            numberlist.append(answertobeaddedtolist)
+        shuffle(numberlist)
+        self.answer = numberlist[:6], numberlist[6:12], numberlist[12:18]
+        for row in self.buttons:
+            for button in row:
+                button.config(fg="#a1dbcd", bg="#a1dbcd", state=tk.NORMAL)
+        self.start_time = time.time()
+
+    def CardPicked(self, row, column, controller, parent):
+        self.buttons[row][column].config(bg="white", text=(self.answer[row][column]), font=HUGE_FONT, width=15,
+                                         height=10, state=tk.DISABLED)  # equals the answer that is there
+        if not self.tobechecked:
+            self.tobechecked = row, column
+        else:
+            to, check = self.tobechecked
+            Validation = False
+            if isinstance(self.answer[to][check], tuple):
+                FirstNumber = (self.answer[to][check][0])
+                LastNumber = (self.answer[to][check][2])  # orginally had sum but the addition meant that it didn't work. Had to slice the tuple to get the first and last elments, i.e the numbers that are going to be used.
+                blahblah = FirstNumber + LastNumber
+                blahblah2 = FirstNumber * LastNumber
+                sign = (self.answer[to][check][1])
+                if sign == "*":
+                    if self.answer[row][column] == blahblah2:
+                        Validation = True
+                    else:
+                        Validation = False
+                elif sign == "+":
+                    if self.answer[row][column] == blahblah:
+                        Validation = True
+                    else:
+                        Validation = False
+            elif isinstance(self.answer[row][column], tuple):
+                FirstNumber = (self.answer[row][column][0])
+                LastNumber = (self.answer[row][column][2])  # orginally had sum but the addition meant that it didn't work. Had to slice the tuple to get the first and last elments, i.e the numbers that are going to be used.
+                blahblah = FirstNumber + LastNumber
+                blahblah2 = FirstNumber * LastNumber
+                sign = (self.answer[row][column][1])
+                if sign == "*":
+                    if self.answer[to][check] == blahblah2:
+                        Validation = True
+                    else:
+                        Validation = False
+                elif sign == "+":
+                    if self.answer[to][check] == blahblah:
+                        Validation = True
+                    else:
+                        Validation = False
+                else:
+                    Validation = False
+                self.Attempts = self.Attempts + 1# if two sums were chose, 8+5 and 9+6, it would come here.
+            if Validation == True:
+                self.answer[row][column] = ''
+                self.answer[to][check] = ''  # orignially had .pop but .pop will not work so had to replace with ""
+                if self.answer == (
+                ['', '', '', '','',''], ['', '', '', '','',''], ['', '', '', '','','']):  # NEED TO FIX THIS; USE RECURSION
+                    self.stop_time = time.time()
+                    self.Time = 500 - (round(self.stop_time - self.start_time ,0))
+                    self.Score = round(self.Time // self.Attempts) * 8
+                    self.parent.after(4000, self.AddScoreToTable(controller, parent))
+            else:
+                self.parent.after(1000, self.HideCards, row, column, to, check)
+            self.tobechecked = None
+
+    def HideCards(self, row, column, to, check):
+        self.buttons[row][column].config(bg="#a1dbcd", state=tk.NORMAL)
+        self.buttons[to][check].config(bg="#a1dbcd", state=tk.NORMAL)
+
+    def AddScoreToTable(self,controller, parent):
+        c.execute("CREATE TABLE IF NOT EXISTS Level2Score (ID INTEGER PRIMARY KEY, Username TEXT, Lv2Score INTEGER)")
+        c.execute("INSERT INTO Level2Score(Username, Lv2Score) VALUES (?, ?)",(Username, self.Score))
+        conn.commit()
+        showinfo("Score", ("Your Score Was", self.Score))
+        self.parent.after(1000, controller.show_frame(showLv2LeaderBoard))
