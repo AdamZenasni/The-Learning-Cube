@@ -1,0 +1,342 @@
+class UserManagement(tk.Frame):
+    def __init__(self, parent,controller):
+        tk.Frame.__init__(self, parent)
+        ColourChosen = Appearance.GetUserColour(Appearance) # Colour is set
+        self.configure(background= ColourChosen)
+
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif") # Titles are made
+        TitleImageLabel = tk.Label(self, image=TitleImage, bg=ColourChosen)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(pady=10, padx=10, column=2)
+
+        UserManagementLabel = tk.Label(self, text=("USER MANAGEMENT")
+                                       , font=REALLY_LARGE_FONT, bg= ColourChosen)
+        UserManagementLabel.grid(pady=10, padx=10, row=2, column=2)
+
+        NoteBook = ttk.Notebook(self) # The nootebook is defined, this is where the User Management will take place so instead of having different pages, this will be different tabs
+        self.Frames(NoteBook) # Assiging the notebook to the frame
+        NoteBook.grid(row=3, column=2) # And where to put it
+
+        Exit = tk.Button(self, text="EXIT", fg="orange", height=3, width=57, command=self.quit)
+        Exit.grid(row=5, column=2, pady=10)  # Exits , no return because the Admin has no where else to go.
+
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif") # Logos
+        LogoLabel1 = tk.Label(self, image=Logo, background= ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo, background=ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=3)
+
+    def Frames(self, notebook):
+        AddAUserFrame = ttk.Frame(notebook) # Adds a Tab called Add A User
+        notebook.add(AddAUserFrame, text='Add A User')
+        self.AddANewUserLabel = tk.Label(AddAUserFrame, text=("ADD A NEW USER")
+                                         , font=BIG_FONT)
+        self.AddANewUserLabel.grid(pady=10, padx=45, row=0, column=0, columnspan=3)  # pady is horiztonal. padx is vertical
+
+        self.AAUFirstNameLabel = tk.Label(AddAUserFrame, text="FIRST NAME")
+        self.AAUFirstNameLabel.grid(row=1, column=0)
+        self.AAUFirstNameEntry = tk.Entry(AddAUserFrame)
+        self.AAUFirstNameEntry.grid(row=2, column=0)
+
+        self.AAULastNameLabel = tk.Label(AddAUserFrame, text="LAST NAME")
+        self.AAULastNameLabel.grid(row=1, column=1)
+        self.AAULastNameEntry = tk.Entry(AddAUserFrame)
+        self.AAULastNameEntry.grid(row=2, column=1)
+
+        self.AAUUsernameLabel = tk.Label(AddAUserFrame, text="USERNAME")
+        self.AAUUsernameLabel.grid(row=3, pady=10)
+        self.AAUUsernameEntry = tk.Entry(AddAUserFrame)
+        self.AAUUsernameEntry.grid(row=3, column=1)
+
+        self.AAURestrictionLabels = tk.Label(AddAUserFrame, text="(more than 8 characters)")
+        self.AAURestrictionLabels.grid(row=4, column=1)
+
+        self.AAUPasswordLabel = tk.Label(AddAUserFrame, text="PASSWORD")
+        self.AAUPasswordLabel.grid(row=5)
+        self.AAUPasswordEntry = tk.Entry(AddAUserFrame)  # GAINING THE INFORMATION.
+        self.AAUPasswordEntry.grid(row=5, column=1)
+
+        self.AAURestrictionLabels1 = tk.Label(AddAUserFrame, text="(more than 8 characters)")
+        self.AAURestrictionLabels1.grid(row=6, column=1)
+        self.choice = tk.IntVar()
+        self.AAUCheckIsAnAdmin = ttk.Checkbutton(AddAUserFrame, variable=self.choice)
+        self.AAUCheckIsAnAdmin.grid(row=7, column=0)
+        self.AAUCIALabel = tk.Label(AddAUserFrame, text="Is An Admin?")
+        self.AAUCIALabel.grid(row=7, column=1)
+
+        self.AAUSumbit = tk.Button(AddAUserFrame, text="CREATE", fg="orange", height=3, width=57,
+                                   command=self.addUsertoDatabase) # Takes to addUsertoDatabase
+        self.AAUSumbit.grid(row=9, column=0, columnspan=3)
+
+
+        DeleteUser = ttk.Frame(notebook)
+        notebook.add(DeleteUser, text='Delete User')
+        self.DeleteUserLabel = tk.Label(DeleteUser, text=("DELETE USER")
+                                        , font=BIG_FONT)
+        self.DeleteUserLabel.grid(pady=10, padx=75, row=0, column=0, columnspan=2)
+
+        self.DUFirstNameLabel = tk.Label(DeleteUser, text="FIRST NAME")
+        self.DUFirstNameLabel.grid(row=3, pady=10)
+        self.DUFirstNameEntry = tk.Entry(DeleteUser)# GAINING THE INFORMATION
+        self.DUFirstNameEntry.grid(row=4)
+
+        self.DULastNameLabel = tk.Label(DeleteUser, text="LAST NAME")
+        self.DULastNameLabel.grid(row=3, column=1, pady=10)
+        self.DULastNameEntry = tk.Entry(DeleteUser)
+        self.DULastNameEntry.grid(row=4, column=1)
+
+        self.DUDeleteUser = tk.Button(DeleteUser, text="DELETE USER", fg="orange", height=3, width=57,
+                                      command=self.deleteuser)
+        self.DUDeleteUser.grid(row=5, column=0, columnspan=2)
+
+
+
+        ViewUserDetails = ttk.Frame(notebook)
+        notebook.add(ViewUserDetails, text='View User Details')
+        self.ViewUserDetails = tk.Label(ViewUserDetails, text=("VIEW USER DETAILS")
+                                        , font=LARGE_FONT)
+        self.ViewUserDetails.grid(pady=10, row=0, column=0, columnspan=4)
+        ListOfData = []
+        c.execute('SELECT * FROM Users') # Gaining all the information from the Table
+        conn.commit()
+        Headings = [tuple[0] for tuple in c.description] # Gaining the heading of each coloumn from a dictonary
+        for row in c.fetchall():
+            ListOfData.append(row)
+        self.VUDFirstNameLabel = tk.Label(ViewUserDetails, text=("First Name"))
+        self.VUDFirstNameLabel.grid(row=1, column=1)
+        self.VUDLastNameLabel = tk.Label(ViewUserDetails, text=("Last Name"))
+        self.VUDLastNameLabel.grid(row=1, column=2)
+        self.Search = tk.Label(ViewUserDetails, text=("Search for User"))
+        self.Search.grid(row=2, column=0)
+        self.SearchFNEntry = tk.Entry(ViewUserDetails)
+        self.SearchFNEntry.grid(row=2, column=1)
+        self.SearchLNEntry = tk.Entry(ViewUserDetails)
+        self.SearchLNEntry.grid(row=2, column=2)
+        self.SearchButton = tk.Button(ViewUserDetails, text="SEARCH", bg="orange", height=2, width=5,
+                                      command=lambda: self.SearchUser(ViewUserDetails))  # lambda is used as it is a throwaway function. So that it only runs when pressed and rit uns everytime it is called.
+        self.SearchButton.grid(row=2, column=3)
+        self.IntroductionLabel = ttk.Label(ViewUserDetails, text="Here is the information", font=Med_Font)
+        self.IntroductionLabel.grid(row=3, column=0, columnspan=4)
+        self.tabs = ttk.Treeview(columns=Headings, show="headings") # self.tabs is created with the heading of the sqlite statement
+        self.ScrollBar = ttk.Scrollbar(orient="vertical", command=self.tabs.yview) # A scrollbar is made to scroll up and down
+        self.tabs.configure(yscrollcommand = self.ScrollBar.set) # Getting the tree to move with the bar
+        self.tabs.grid(column=0, row=4, sticky='nsew', in_= ViewUserDetails, columnspan=4) # Here I set the tree in the middle of the frame, to expand north,south,east and west.
+        self.ScrollBar.grid(column=4, row=4, sticky='ns', in_=ViewUserDetails)# Here I keep the scrollbar to the right side.
+        for column in Headings:
+            self.tabs.heading(column, text=column.title()) # Get the title
+            self.tabs.column(column, width=tkFont.Font().measure(column.title())) # and how long it is, this is to know how long each column has to be
+        for item in ListOfData:
+            self.tabs.insert('', 'end', values=item)
+
+
+        ChangeUserDetails = ttk.Frame(notebook)
+        notebook.add(ChangeUserDetails, text='Change User Details')
+        tk.Label(ChangeUserDetails, text=("CHANGE USER DETAILS"), font=BIG_FONT).grid(pady=10, row=0, column=0, columnspan=2)
+
+        tk.Label(ChangeUserDetails, text="Username").grid(row=1, column=0)
+        self.CUDUsernameEntry = tk.Entry(ChangeUserDetails)
+        self.CUDUsernameEntry.grid(row=2, column=0)
+
+        tk.Label(ChangeUserDetails, text= "Old Password").grid(row=1, column=1)
+        self.CUDOldPasswordEntry = tk.Entry(ChangeUserDetails)
+        self.CUDOldPasswordEntry.grid(row=2, column=1)
+
+        tk.Label(ChangeUserDetails, text="New Password").grid(row=3, pady=10)
+        self.CUDNewPasswordEntry = tk.Entry(ChangeUserDetails)
+        self.CUDNewPasswordEntry.grid(row=3, column=1)
+
+        tk.Label(ChangeUserDetails, text="Confirm New Password").grid(row=5, pady=10)
+        self.CUDConfirmNewPasswordEntry = tk.Entry(ChangeUserDetails)
+        self.CUDConfirmNewPasswordEntry.grid(row=5, column=1)
+
+        tk.Button(ChangeUserDetails, text="CHANGE", fg="orange", height=3, width=57,
+                                   command=self.UpdateUser).grid(row=9, column=0, columnspan=3) # when presse, call UpdateUser
+
+
+        ViewUserScores = ttk.Frame(notebook)
+        notebook.add(ViewUserScores, text='View Scores')
+        notebook = ttk.Notebook(ViewUserScores)
+        self.ViewScores(notebook) # calls a new function that will contain another notenook
+        notebook.grid(row = 3, column = 5)
+
+    def UpdateUser(self):
+        ChosenUsername = self.CUDUsernameEntry.get()
+        NewPassword = self.CUDNewPasswordEntry.get()
+        OldPassword = self.CUDOldPasswordEntry.get()
+        c.execute("SELECT * FROM Users WHERE username = ? and password = ?", (ChosenUsername, OldPassword))
+        conn.commit()
+        CorrectUser = c.fetchone() # If the sqlite query is true, then this will contain the user
+        if CorrectUser: # If user exists
+            if not self.CUDNewPasswordEntry.get() == self.CUDConfirmNewPasswordEntry.get(): # if the passwords do not match
+                tk.Label(self, text="Passwords do not match", font=LARGE_FONT).grid(row=7, column = 1 , columnspan = 3)
+                return
+            else:
+                if len(self.CUDNewPasswordEntry.get()) <= 5: # if password is less than 6 lettters
+                    tk.Label(self, text="Password must be more than 6 letters", font=LARGE_FONT).grid(row=8, column=1, columnspan=3)
+                    return
+                else:
+                    if askokcancel("Are You Sure?", ("Are you sure?")): # Confirmation the admin wants to update detials
+                        c.execute("UPDATE Users SET Password = ? WHERE Username = ?", (NewPassword, ChosenUsername))
+                        conn.commit() # Update User
+                        tk.Label(self, text="Password Changed", font=LARGE_FONT).grid(row=7, column = 1 , columnspan = 3)
+                conn.commit()
+            return
+        else:  # User does not exist
+            tk.Label(self, text="User does not exist", font=LARGE_FONT).grid(row=7, column=1, columnspan=3)
+            return
+
+    def addUsertoDatabase(self):
+        c.execute(
+            'CREATE TABLE IF NOT EXISTS Users(FirstName TEXT, LastName TEXT, Username TEXT, Password TEXT, Admin TEXT)')
+        FirstName = self.AAUFirstNameEntry.get()
+        self.AAUFirstNameEntry.delete('0', END)
+        LastName = self.AAULastNameEntry.get()
+        self.AAULastNameEntry.delete('0', END)
+        AAUUsername = self.AAUUsernameEntry.get()
+        self.AAUUsernameEntry.delete('0', END)
+        c.execute('SELECT Username FROM Users WHERE Username = (?)', (AAUUsername,))
+        UniqueUsername = c.fetchone() # THIS IS EXTREMELY IMPORTNAT. It ensure, the user does not have an idnetical username to someone else
+        Password = self.AAUPasswordEntry.get()
+        self.AAUPasswordEntry.delete('0', END)
+        self.IsAdmin = self.choice.get()
+        if self.IsAdmin == 1:
+            Admin = 'TRUE'
+        else:
+            Admin = 'FALSE'
+        if not UniqueUsername: # If user does not already share a username
+            if not FirstName or not LastName or not AAUUsername or not Password:  # If either slate is blank
+                showerror("Error!", "User Creditenals are not valid")
+            elif len(self.AAUPasswordEntry.get()) >= 5: # Less than 6 characters
+                showerror("Error!", "Password must be more than 6 characters")
+            else:
+                if askokcancel("Are You Sure?", ("Are the user Creditenals correct")): # Confirmation
+                    c.execute("INSERT INTO Users(FirstName, LastName, Username, Password, Admin) VALUES (?, ?, ?, ?, ?)",
+                              (FirstName, LastName, AAUUsername, Password, Admin)) # Add User
+                    c.execute("CREATE TABLE IF NOT EXISTS User_Information(ID INTEGER PRIMARY KEY, Username TEXT, Profile_Pic BLOB DEFAULT 'Profile Picture.gif')") # Instnatly create User Informatoin
+                    c.execute("INSERT INTO User_Information(Username) VALUES (?)", (AAUUsername,)) # and insert into it the username that links the tables together
+                    tk.Label(self, text="User Added", font=LARGE_FONT).grid(row=3, column=3)
+                    conn.commit()
+                else:
+                    return
+        else:
+            tk.Label(self, text="Username is invalid", font=LARGE_FONT).grid(row=3, column=3)
+
+    def SearchUser(self, ViewUserDetails):
+        FirstName = self.SearchFNEntry.get()
+        LastName = self.SearchLNEntry.get()  # If Can use dropdown LIST
+        c.execute("SELECT * FROM Users WHERE firstname = ? and lastname = ?", (FirstName, LastName))
+        User = c.fetchone()
+        conn.commit()
+        if User: #If user exists
+            ListForData = [c.fetchone()]
+            Headings = [tuple[0] for tuple in c.description]  # this is a dictonary
+            conn.commit()
+            self.tabs = ttk.Treeview(columns=Headings, show="headings")
+            self.tabs.grid(column=0, row=4, sticky='nsew', in_=ViewUserDetails, columnspan=4)
+            for column in Headings:
+                self.tabs.heading(column, text=column.title())
+                self.tabs.column(column, width=tkFont.Font().measure(column.title()))
+            for item in ListForData:
+                self.tabs.insert('', 'end', values=item)
+            # REPLACES THE ALREADY CREATED TREE OF ALL THE USERS WITH A CUSTOMISED ONE TO THE USER.
+        else:
+            tk.Label(self, text="No User Found", font=LARGE_FONT).grid(row=3, column=3) # prints an error message
+            return
+
+    def deleteuser(self):
+        FirstName = self.DUFirstNameEntry.get()
+        self.DUFirstNameEntry.delete('0', END)
+        LastName = self.DULastNameEntry.get()
+        self.DULastNameEntry.delete('0', END)
+        if not FirstName or not LastName:  # If user details are blank
+            showerror("Error!", "User Creditenals are not valid") # Show Error
+        else:
+            if askokcancel("Are You Sure?", ("Are you sure you want to delete the user")): # Ask for confirmation
+                c.execute("DELETE FROM Users WHERE FirstName = ? and LastName = ?", (FirstName,LastName))
+                tk.Label(self, text="Deleted User", font=LARGE_FONT).grid(row=3, column=3)
+        conn.commit()
+
+    def ViewScores (self, notebook):
+        Level1 = ttk.Frame(notebook) # THE EXACT SAME IS DONE BUT FOR THE LEVEL TABLES INSTEAD
+        notebook.add(Level1, text='Level 1')
+        self.AddANewUserLabel = tk.Label(Level1, text=("LEVEL 1") ,font=BIG_FONT)
+        self.AddANewUserLabel.grid(pady = 10, padx = 45, row = 0, column = 0, columnspan = 3)
+        ListForData = []
+        c.execute('SELECT FirstName, LastName, Lv1Score FROM Users CROSS JOIN Level1Score')
+        Headings = [tuple[0] for tuple in c.description]
+        for row in c.fetchall():
+            ListForData.append(row)
+        self.IntroductionLabel = ttk.Label(Level1, text = "Here is the information", font = Med_Font).grid(row = 3 , column = 0, columnspan = 4)
+        self.tabs = ttk.Treeview(columns=Headings, show="headings")
+        self.ScrollBar = ttk.Scrollbar(orient="vertical", command=self.tabs.yview)
+        self.tabs.configure(yscrollcommand=self.ScrollBar.set)
+        self.tabs.grid(column= 0, row=4, sticky='nsew', in_= Level1, columnspan = 4)
+        self.ScrollBar.grid(column=4, row=4, sticky='ns', in_=Level1)
+        for column in Headings:
+            self.tabs.heading(column, text=column.title())
+            self.tabs.column(column, width=tkFont.Font().measure(column.title()))
+        for item in ListForData:
+            self.tabs.insert('', 'end', values=item)
+
+        Level2 = ttk.Frame(notebook)
+        notebook.add(Level2, text='Level 2')
+        self.AddANewUserLabel = tk.Label(Level2, text=("LEVEL 2") ,font=BIG_FONT)
+        self.AddANewUserLabel.grid(pady = 10, padx = 45, row = 0, column = 0, columnspan = 3)
+        ListForData = []
+        c.execute('SELECT FirstName, LastName, Lv2Score FROM Users CROSS JOIN Level2Score')
+        Headings = [tuple[0] for tuple in c.description]
+        for row in c.fetchall():
+            ListForData.append(row)
+        self.IntroductionLabel = ttk.Label(Level2, text = "Here is the information", font = Med_Font).grid(row = 3 , column = 0, columnspan = 4)
+        self.tabs = ttk.Treeview(columns=Headings, show="headings")
+        self.ScrollBar = ttk.Scrollbar(orient="vertical", command=self.tabs.yview)
+        self.tabs.configure(yscrollcommand=self.ScrollBar.set)
+        self.tabs.grid(column= 0, row=4, sticky='nsew', in_= Level2, columnspan = 4)   # ADD TIME TAKEN, DATE IT WAS DONE AND THE NUMBER OF ATTEMPTS INTO THE SCORE DATABASE
+        self.ScrollBar.grid(column=4, row=4, sticky='ns', in_=Level2)
+        for column in Headings:
+            self.tabs.heading(column, text=column.title())
+            self.tabs.column(column, width=tkFont.Font().measure(column.title()))
+        for item in ListForData:
+            self.tabs.insert('', 'end', values=item)
+
+        Level3 = ttk.Frame(notebook)
+        notebook.add(Level3, text='Level 3')
+        self.AddANewUserLabel = tk.Label(Level3, text=("LEVEL 3") ,font=BIG_FONT).grid(pady = 10, padx = 45, row = 0, column = 0, columnspan = 3)
+        ListForData = []
+        c.execute('SELECT FirstName, LastName, Lv3Score FROM Users CROSS JOIN Level3Score')
+        Headings = [tuple[0] for tuple in c.description]
+        for row in c.fetchall():
+            ListForData.append(row)
+        self.IntroductionLabel = ttk.Label(Level3, text = "Here is the information", font = Med_Font).grid(row = 3 , column = 0, columnspan = 4)
+        self.tabs = ttk.Treeview(columns=Headings, show="headings")
+        self.ScrollBar = ttk.Scrollbar(orient="vertical", command=self.tabs.yview)
+        self.tabs.configure(yscrollcommand=self.ScrollBar.set)
+        self.tabs.grid(column= 0, row=4, sticky='nsew', in_= Level3, columnspan = 4)
+        self.ScrollBar.grid(column=4, row=4, sticky='ns', in_=Level3)
+        for column in Headings:
+            self.tabs.heading(column, text=column.title())
+            self.tabs.column(column, width=tkFont.Font().measure(column.title()))
+        for item in ListForData:
+            self.tabs.insert('', 'end', values=item)
+
+        Level4 = ttk.Frame(notebook)
+        notebook.add(Level4, text='Level 4')
+        self.AddANewUserLabel = tk.Label(Level4, text=("LEVEL 4") ,font=BIG_FONT).grid(pady = 10, padx = 45, row = 0, column = 0, columnspan = 3)
+        ListForData = []
+        c.execute('SELECT FirstName, LastName, Lv4Score FROM Users CROSS JOIN Level4Score')
+        Headings = [tuple[0] for tuple in c.description]
+        for row in c.fetchall():
+            ListForData.append(row)
+        self.IntroductionLabel = ttk.Label(Level4, text = "Here is the information", font = Med_Font).grid(row = 3 , column = 0, columnspan = 4)
+        self.tabs = ttk.Treeview(columns=Headings, show="headings")
+        self.ScrollBar = ttk.Scrollbar(orient="vertical", command=self.tabs.yview)
+        self.tabs.configure(yscrollcommand=self.ScrollBar.set)
+        self.tabs.grid(column= 0, row=4, sticky='nsew', in_= Level4, columnspan = 4)
+        self.ScrollBar.grid(column=4, row=4, sticky='ns', in_=Level4)
+        for column in Headings:
+            self.tabs.heading(column, text=column.title())
+            self.tabs.column(column, width=tkFont.Font().measure(column.title()))
+        for item in ListForData:
+            self.tabs.insert('', 'end', values=item)
