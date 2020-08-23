@@ -1,0 +1,39 @@
+class ShowScores(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        ColourChosen = Appearance.GetUserColour(Appearance)
+        self.configure(background= ColourChosen)
+        self.Photo = tk.PhotoImage(file="JustTheLogo.gif")
+        photo = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        Title = tk.Label(self, image=photo, background=ColourChosen)
+        Title.image = photo
+        Title.grid(row=0, column=1, columnspan=2)
+        c.execute("SELECT MAX(Lv1Score) FROM Level1Score WHERE Username = (?)", (Username,))
+        HighestLevel1Result = c.fetchone() # Aggregate SQL Query, quicker for the program than the original merge sort,
+        c.execute("SELECT MAX(Lv2Score) FROM Level2Score WHERE Username = (?)", (Username,)) # merge sort is still needed
+        HighestLevel2Result = c.fetchone() # later on. Here, I select the highest score from each table where the
+        c.execute("SELECT MAX(Lv3Score) FROM Level3Score WHERE Username = (?)", (Username,)) # username is the same one
+        HighestLevel3Result = c.fetchone() # that is logged in.
+        c.execute("SELECT MAX(Lv4Score) FROM Level4Score WHERE Username = (?)", (Username,))
+        HighestLevel4Result = c.fetchone()
+        Logo = tk.PhotoImage(file = r"JustTheLogo.gif")
+        LogoLabel1 = tk.Label(self, image = Logo, background = ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row = 0, column = 0)
+        LogoLabel2 = tk.Label(self, image = Logo, background = ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row = 0, column = 5)
+        tk.Label(self, text = "LEADERBOARD", font=Title_Font, bg=ColourChosen, fg = "white").grid(row = 2, column = 1, columnspan =2)
+        tk.Label(self, text = "HIGHEST LEVEL ONE RESULT", font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 3, column = 1, padx = 50) # padx means leavae a distance of 50 vertically between that and whatever is on its sides.
+        tk.Label(self, text = HighestLevel1Result, font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 3, column = 2, padx = 50) # Could have it all on one line but that would ruin the view of the message as it would be in {brackets}
+        tk.Label(self, text = "HIGHEST LEVEL TWO RESULT", font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 4, column = 1, padx = 50)
+        tk.Label(self, text = HighestLevel2Result, font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 4, column = 2, padx = 50)
+        tk.Label(self, text = "HIGHEST LEVEL THREE RESULT", font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 5, column = 1, padx = 50)
+        tk.Label(self, text = HighestLevel3Result, font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 5, column = 2, padx = 50)
+        tk.Label(self, text = "HIGHEST LEVEL FOUR RESULT", font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 6, column = 1, padx = 50)
+        tk.Label(self, text = HighestLevel4Result, font=BIG_FONT, bg=ColourChosen, fg = "white").grid(row = 6, column = 2, padx = 50)
+
+        tk.Button(self, text = "RETURN", height = 3 , width = 50, command=lambda: controller.show_frame(MyAccountChoice)).grid(row = 8, column = 1, pady = 50) # RETUNS
+        tk.Button(self, text = "EXIT", height = 3 , width = 50, command= self.quit).grid(row = 8, column = 2, pady = 50) # EXITS
+
+
