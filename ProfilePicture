@@ -1,0 +1,69 @@
+class ProfilePicture(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        ColourChosen = Appearance.GetUserColour(Appearance) # Background Colour
+        self.configure(background= ColourChosen)
+
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif") # Photos
+        TitleImageLabel = tk.Label(self, image=TitleImage, bg=ColourChosen)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(row = 0, column = 1,columnspan = 3)
+
+        tk.Label(self, text="PROFILE PICTURE",font=LARGE_FONT, bg = ColourChosen).grid(pady = 10, padx = 10, row = 1, column = 1, columnspan = 3)
+        tk.Button(self, text="UPLOAD IMAGE", fg="orange", height=3, width=50, command=lambda: self.GetPicture(ProposedPicture)).grid(row = 2, column = 3) # when pressed the function is called with the Proposed Picture label, to over load it with the picture that will be uploaded by the user
+
+        ProposedPicture = tk.Label(self, text = "Please Upload A Picture", height = 10, width = 25)
+        ProposedPicture.grid(column=3, row=3) # This orignally will be just text, but as the user uploas a picture, the text will not be able to be seen
+
+        c.execute('SELECT Profile_Pic FROM User_Information WHERE Username = ?',(Username,)) # Reading the database for the Profile Picture file
+        conn.commit()
+        global CP #Has to be here, as we do not want to be defing global varibale later on
+        CPPicture = (c.fetchone()[0]) # the [0] is there to remove the brackets and just have the filepath
+        CurrentProfilePicture = tk.PhotoImage(file=CPPicture) # Referneced It
+        CurrentProfilePictureLabel = tk.Label(self,image = CurrentProfilePicture)
+        CurrentProfilePictureLabel.image = CurrentProfilePicture
+        CurrentProfilePictureLabel.grid(column = 1, row = 2, rowspan = 3)
+
+        ConfirmImage = tk.Button(self, text="CONFIRM IMAGE", fg="orange", height=3, width=50, command=lambda: self.AddPictureToDatabase(CurrentProfilePictureLabel)) # When Pressed, add new picture to database
+        ConfirmImage.grid(row = 4, column = 3)
+
+        tk.Button(self,text = "RETURN", fg = "orange", height = 3 , width = 57, command=lambda: controller.show_frame
+        (CustomisationChoice)).grid(row = 6, column = 1, pady = 10) # Return to previous page
+        tk.Button(self,text = "EXIT", fg = "orange", height = 3 , width = 57,command = self.quit).grid(row = 6, column = 3, pady = 10) # Exit the system
+
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif") # Logos
+        LogoLabel1 = tk.Label(self, image=Logo, background= ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo, background= ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=4)
+
+
+    def AddPictureToDatabase(self,LabelToBeCleared):
+        c.execute("UPDATE User_Information SET Profile_Pic = ? WHERE Username = ?", (self.filename, Username,))
+        conn.commit() # Add New Picture file path to the database
+        self.ClearLabel(LabelToBeCleared) # Clear The Label
+        self.UpdatePictureShown()
+
+
+    def GetPicture(self,LabelToBeCleared):
+        self.filename = filedialog.askopenfilename(filetypes=(("GIF files", "*.gif"),)) # Window pop up allows uers to pick the file of their choice
+        self.filename = str(self.filename) # converts the file name to be a string
+        self.ClearLabel(LabelToBeCleared) # Ensures the Label is cleared
+        self.ChosenPicture = tk.PhotoImage(file=str(self.filename)) # Updates the picture shown
+        ProposedPicture = tk.Label(self, image = self.ChosenPicture, background = "#a1dbcd")
+        ProposedPicture.grid(column=3, row=3)
+        return self.filename # returns the file path
+
+    def ClearLabel(self,LabelToBeCleared):
+        LabelToBeCleared.configure(image = "") # Clears the label
+        return
+
+    def UpdatePictureShown(self):
+        c.execute('SELECT Profile_Pic FROM User_Information WHERE Username = ?', ([Username])) # Fund User
+        conn.commit()
+        self.ProfilePicture = tk.PhotoImage(file= c.fetchone()[0]) #
+        CurrentProfilePicture = tk.Label(self, text = "Current Picture", image = self.ProfilePicture) # Show the current picture.
+        CurrentProfilePicture.grid(column = 1, row = 2, rowspan = 3)
+        return
