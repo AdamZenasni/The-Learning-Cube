@@ -1,0 +1,24 @@
+class TLCApp(tk.Tk): # I have inherited the tk class from tkinter.
+    def __init__(self): # Initalise
+        tk.Tk.__init__(self) # Initalise tkinter
+
+        tk.Tk.wm_title(self, "The Learning Cube")
+
+        Framecontainer = tk.Frame(self) # The Frame is the window, assiging the framecontainer the window
+        Framecontainer.pack(side="top", fill="both", expand=True) # Fills the frame completlely, without it there would be no frame
+
+        self.frames = {} # Here I have used a Dictonary. It references all the frames that will be defined below, and in F would call the name in the dictonary. Here is where all the frames are shown
+        self.title("The Learning Cube")
+
+        for F in (Student_Hub, CustomisationChoice, Appearance, MyAccountChoice, ShowScores, ShowUserDetails,
+            ProfilePicture, UserManagement, ChoiceForGame, Level1, showLv1LeaderBoard, Level2, showLv2LeaderBoard, Level3, showLv3LeaderBoard, Level4, showLv4LeaderBoard): # All the names in the dictonary correspon to a class, so when it is called with show_frame it works.
+            frame = F(Framecontainer, self) # defines frame
+            self.frames[F] = frame  # Saves Frame in dictonary.
+
+            frame.grid(row=0, column=0, sticky="nsew") # Stretch in centre, covering the entire screen
+
+        self.show_frame(FrameToBeShown) # That has come from LoggingIn, isn't used when the frame is raised.
+
+    def show_frame(self, controller): #
+        frame = self.frames[controller] # controller is the frame that is being called. It seaches the dictonary for the frame returns it
+        frame.tkraise() # Brings the frame that is wanted to the front, raise the chosen frame
