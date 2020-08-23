@@ -1,0 +1,61 @@
+class ShowUserDetails(tk.Frame): # This is to give the student the opporunity to change their own password
+    def __init__(self, parent, controller,):
+        tk.Frame.__init__(self, parent)
+        ColourChosen = Appearance.GetUserColour(Appearance)
+        self.configure(background= ColourChosen)
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        TitleImageLabel = tk.Label(self, image=TitleImage, bg=ColourChosen)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(pady=10, padx=10, column=1, columnspan = 3)
+
+        tk.Label(self, text=("CHANGE PASSWORD"), font=REALLY_LARGE_FONT, bg= ColourChosen).grid(row=2, column = 1 , columnspan = 3)
+        tk.Label(self, text=("Password is case sensitive"), font=REALLY_LARGE_FONT, bg= ColourChosen).grid(row=3, column = 1 , columnspan = 3)
+        tk.Label(self, text="Password must be more than 6 letters", font=LARGE_FONT).grid(row=4, column=1, columnspan=3)
+        tk.Label(self, text="Old Password", font=LARGE_FONT, bg=ColourChosen).grid(row=5, column=1)
+        self.OldPasswordEntry = tk.Entry(self, show = "*",) # Getting information about the old password
+        self.OldPasswordEntry.grid(row=6, column=1)
+        tk.Label(self, text="New Password", font=LARGE_FONT, bg=ColourChosen).grid(row=5, column=2)
+        self.PasswordEntry = tk.Entry(self, show = "*",) # Getting information about the new password
+        self.PasswordEntry.grid(row=6, column=2)
+        tk.Label(self, text="Confirm New Password", font=LARGE_FONT, bg=ColourChosen).grid(row=5, column=3)
+        self.ConfirmPasswordEntry = tk.Entry(self, show="*") # Asking to confirm the message
+        self.ConfirmPasswordEntry.grid(row=6, column=3)
+        tk.Button(self, text="CHANGE", fg="orange", height=3, width=57, command=self.EnsuringInputsAreValid).grid(row = 7, column=  1, columnspan = 3) # When the Button is pressed, Validation begins
+        tk.Button(self, text = "RETURN", height = 3 , width = 50, command=lambda: controller.show_frame(MyAccountChoice)).grid(row = 10, column = 1, columnspan = 3)# RETURNS USER
+        tk.Button(self, text = "EXIT", height = 3 , width = 50, command= self.quit).grid(row = 11, column = 1, columnspan = 3) # USER QUITS
+
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif") # Logos
+        LogoLabel1 = tk.Label(self, image=Logo, background= ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo, background=ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=4)
+
+    def EnsuringInputsAreValid(self): # Validation is here
+        c.execute("SELECT Password FROM Users WHERE username = ? and password = ?", (Username, self.OldPasswordEntry.get())) # Firs off, ensuring the user exits
+        conn.commit()
+        CorrectUser = c.fetchone() # This means that if the user exists they equal the row in the table
+        if CorrectUser: # User does exist
+            if len(self.PasswordEntry.get()) <= 5: # If user is less tha or equal to 5
+                tk.Label(self, text="Password must be more than 6 letters", font=LARGE_FONT).grid(row=8, column=1, columnspan=3) # Error, must be more than 6 letter long
+                return
+            else:
+                if self.PasswordEntry.get() == self.ConfirmPasswordEntry.get(): # Ensuring the confirm new password and
+                    c.execute("SELECT * FROM Users WHERE username = ? and password = ?", (Username, self.OldPasswordEntry.get())) # new password match, an then check database to see if user's username and password exist
+                    CorrectPassword = c.fetchone()
+                    if not CorrectPassword: # If they don't
+                        return
+                    else: # If they do
+                        if askokcancel("Are You Sure?", ("Are you sure?")): # MessageBox to enure password wants to be changed
+                            c.execute("UPDATE Users SET Password = ? WHERE Username = ?", (self.PasswordEntry.get(), Username)) # Password is change
+                            conn.commit()
+                        else:
+                            return
+                        tk.Label(self, text="You Have A New Password", font=LARGE_FONT).grid(row=9 , column = 1 , columnspan = 3) # message is shown to the user letting them know
+                else:
+                    tk.Label(self, text="Passwords do not match", font=LARGE_FONT).grid(row=9, column=1, columnspan=3)
+                    return
+                conn.commit()
+        else:
+            tk.Label(self, text="Old Password Is Not Valid", font=LARGE_FONT).grid(row=9, column=1, columnspan=3)
