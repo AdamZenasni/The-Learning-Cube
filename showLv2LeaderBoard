@@ -1,0 +1,38 @@
+class showLv2LeaderBoard(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        self.parent = parent
+        Colour = (random.choice(["Black", "Red", "Orange", "Green", "Pink", "Purple", "Blue"]))
+        self.configure(background = Colour)
+        self.Photo = tk.PhotoImage(file="JustTheLogo.gif")
+        photo = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        Title = tk.Label(self, image=photo, background=Colour)
+        Title.image = photo
+        Title.grid(row=0, column=1, columnspan=2)
+        Logo = tk.PhotoImage(file = r"JustTheLogo.gif")
+        LogoLabel1 = tk.Label(self, image = Logo, background = Colour)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row = 0, column = 0)
+        LogoLabel2 = tk.Label(self, image = Logo, background = Colour)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row = 0, column = 5)
+        conn.commit()
+        c.execute("SELECT Username, Lv2Score from Level2Score")
+        Scores = c.fetchall()
+        MergeSortingScores(Scores)
+        tk.Label(self, text = "LEADERBOARD", font=Title_Font, bg=Colour, fg = "white").grid(row = 2, column = 1, columnspan = 2)
+        tk.Label(self, text = "1", font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 3, column = 1, padx = 50)
+        tk.Label(self, text = Scores[0], font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 3, column = 2, padx = 50)
+        tk.Label(self, text = "2", font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 4, column = 1, padx = 50)
+        tk.Label(self, text = Scores[1], font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 4, column = 2, padx = 50)
+        tk.Label(self, text = "3", font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 5, column = 1, padx = 50)
+        tk.Label(self, text = Scores[2], font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 5, column = 2, padx = 50)
+        tk.Label(self, text = "4", font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 6, column = 1, padx = 50)
+        tk.Label(self, text = Scores[3], font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 6, column = 2, padx = 50)
+        tk.Label(self, text = "5", font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 7, column = 1, padx = 50)
+        tk.Label(self, text = Scores[4], font=REALLY_LARGE_FONT, bg=Colour, fg = "white").grid(row = 7, column = 2, padx = 50)
+
+        tk.Button(self, text = "CONTINUE", height = 3 , width = 50, command=lambda: controller.show_frame(Level3)).grid\
+            (row = 8, column = 1, pady = 50)#AND PUT THIS AS THE ONE PLUS THE VARIABLE SO IT NOWS TO GO TO THE NXT LVL
+        tk.Button(self, text = "EXIT", height = 3 , width = 50, command= self.quit).grid(row = 8, column = 2, pady = 50)
+
