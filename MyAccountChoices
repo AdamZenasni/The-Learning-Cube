@@ -1,0 +1,30 @@
+class MyAccountChoice(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        ColourChosen = Appearance.GetUserColour(Appearance) # Calls the GetUserColour method to get the User colour
+        self.configure(background= ColourChosen) # changes the colour
+
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif") # Inserts the pictures
+        TitleImageLabel = tk.Label(self, image=TitleImage, bg = ColourChosen)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(pady=10, padx=10, column=1, columnspan=5)
+
+        ViewScores = tk.Button(self, text="VIEW SCORES", fg="orange", height=3, width=50,
+                               command=lambda: controller.show_frame(ShowScores)) # Takes the user to the Show Score page
+        ViewScores.grid(row=1, column=1, padx = 10, columnspan = 2)
+
+        ViewUserDetails = tk.Button(self, text="CHANGE USER DETAILS", fg="orange", height=3, width=50,
+                                    command=lambda: controller.show_frame(ShowUserDetails)) # Takes the user to the View User Details Page
+        ViewUserDetails.grid(row=2, column=1, padx = 10, columnspan = 2)
+
+
+        tk.Button(self, text = "RETURN", height = 3 , width = 50, command=lambda: controller.show_frame(Student_Hub)).grid(row = 8, column = 1, pady = 50)# Returns to the Student_Hub
+        tk.Button(self, text = "EXIT", height = 3 , width = 50, command= self.quit).grid(row = 8, column = 2, pady = 50) # Exits
+
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif") # The Logos
+        LogoLabel1 = tk.Label(self, image=Logo, background=ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo, background=ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=6)
