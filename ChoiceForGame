@@ -1,0 +1,40 @@
+class ChoiceForGame(tk.Frame):
+    def __init__(self, parent,controller):
+        tk.Frame.__init__(self, parent)
+        ColourChosen = Appearance.GetUserColour(Appearance) # Get Colour
+        self.configure(background= ColourChosen) # Change Colour
+
+        TitleImage = tk.PhotoImage(file = r"The Learning CubeTitle.gif") # Pictures
+        TitleImageLabel = tk.Label(self,image = TitleImage, bg = ColourChosen)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(column = 1, columnspan = 4)
+
+        WelcomeMessage = tk.Label(self, text = ("WELCOME"), fg = "orange", bg=ColourChosen, font = HUGE_FONT)
+        WelcomeMessage.grid(row = 1,column = 1, columnspan = 3)
+
+        InformativeMessage = tk.Label(self, text = ("Please chose one of the following"), bg=ColourChosen, font = BIG_FONT)
+        InformativeMessage.grid(row = 2,column = 1, columnspan = 4)
+
+        LevelOne = tk.Button(self,text = "LEVEL 1", fg = "orange",height = 10 , width = 20,
+                           command=lambda: controller.show_frame(Level1))# Play Level1
+        LevelOne.grid(row = 3, column = 1)
+        LevelTwo = tk.Button(self,text = "LEVEL 2", fg = "orange",height = 10 , width = 20,
+                                      command=lambda: controller.show_frame(Level2))# Play Level2
+        LevelTwo.grid(row = 3, column = 2)
+        LevelThree= tk.Button(self,text = "LEVEL 3", fg = "orange",height = 10 , width = 20,
+                                      command=lambda: controller.show_frame(Level3))# Play Level3
+        LevelThree.grid(row = 3, column = 3)
+        LevelFour = tk.Button(self,text = "LEVEL 4", fg = "orange",height = 10 , width = 20,
+                                      command=lambda: controller.show_frame(Level4))# Play Level4
+        LevelFour.grid(row = 3, column = 4)
+        Exit = tk.Button(self,text = "EXIT", fg = "orange", height = 3 , width = 50, command= self.quit)
+        Exit.grid(row = 4, column = 1, columnspan = 4, pady = 10)
+
+        Logo = tk.PhotoImage(file = r"JustTheLogo.gif") #Logos
+        LogoLabel1 = tk.Label(self, image = Logo, background = ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row = 0, column = 0)
+        LogoLabel2 = tk.Label(self, image = Logo, background = ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row = 0, column = 5)
+
