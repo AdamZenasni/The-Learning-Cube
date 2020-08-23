@@ -1,0 +1,65 @@
+class LogIn(tk.Tk): # I have inherited the tk class from tkinter.
+    def __init__(self): # The method is inialisation, when LogIn runs so to will the method
+        tk.Tk.__init__(self) # Initalise tkinter
+
+        tk.Tk.title(self, "Log In") # The title of the page
+        self.configure(background="#a1dbcd") # Settting the background and the components for the GUI
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        TitleImageLabel = tk.Label(self, image=TitleImage, bg="#a1dbcd")
+        TitleImageLabel.image = TitleImage # Must be referneced in order to work, that is why later I have to use global with profile picture
+        TitleImageLabel.grid(pady=10, padx=10, column=1) # the title images is place and shown
+
+        tk.Label(self, text=("PLEASE LOGIN TO YOUR *THELEARNINGCUBE* ACCOUNT"), font=LARGE_FONT, bg="#a1dbcd").grid\
+            (pady=10, padx=10, row=1, column=1) # Pady & Padx means the space that the button leaves to next element. So if there was another button next to it, it would leave a space of 10
+
+        tk.Label(self, text="Username", font=LARGE_FONT, bg="#a1dbcd").grid(row=2, column=1)  # as these are both Lael's they do not need to be assigned variables
+        self.UsernameEntry = tk.Entry(self) # Here is the input for the password in order to log int"
+        self.UsernameEntry.grid(row=3, column=1)
+
+        tk.Label(self, text="Password", font=LARGE_FONT, bg="#a1dbcd").grid(row=4, column=1)
+        self.PasswordEntry = tk.Entry(self, show = "*",) # Here the password is starred out so no-one can see it, this is one of my objectives
+        self.PasswordEntry.grid(row=5, column=1)
+
+        tk.Button(self, text="Login", fg="orange", bg="#a1dbcd", command=lambda: self.Validation()).grid(row=7, column=1)# When the Button above is pressed, it sends the user through to the method Validation which will determine if User credientals are correct
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif") # Other appearance tools, that place the logo on either side of
+        LogoLabel1 = tk.Label(self, image=Logo, background="#a1dbcd") # the title
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo, background="#a1dbcd")
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=3)
+
+        LogoandTitle = tk.PhotoImage(file=r"TheLearningCube1.gif")
+        LogoandTitleLabel = tk.Label(self, image=LogoandTitle, background="#a1dbcd")
+        LogoandTitleLabel.image = LogoandTitle
+        LogoandTitleLabel.grid(row=9, column=1)
+
+    def Validation(self):
+        # Originally, this was the main problem to my program. I could not get the program to run because the class LogIn inhertied from the TLC App, this meant that global Username had no value as Python runs the entire code in runtime, and thus when it got to Customisation, and recieving the user's chosen colour, because there was no user there was no colour and thus the program crashed. In order to correct this, I created a whole new frame for LogIn, where instead of inheriting from the TLCApp, it inhertied directly from tk.Tk. The framewould be destroyed if the LogIn was correct and run the TLCApp class where the program starts.
+        global Username # Username is set to global, as the Username will be vital throughout the program, which is why it MUST be unique
+        global FrameToBeShown # This is so the program knows which frame to show, if it is an administrator then it will show the UserManagement page, otherwise it will show the Student Hub
+        Username = self.UsernameEntry.get() # Getting the information from the Log In form
+        Password = self.PasswordEntry.get() #Pa
+        c.execute("SELECT * FROM Users WHERE username = ? and password = ?", (Username, Password)) # Check in the database for the user
+        self.CorrectUser = c.fetchone() # Return the query's value
+        if self.CorrectUser: # If there is a result then
+            Authenication = "True" # We know that there is a user, not sure wherther it is an admin or not yet
+            c.execute("SELECT Admin FROM Users WHERE  username = ? and password = ?", (Username, Password)) # Check if user is admin
+            IsAdmin = c.fetchone() # Return if the user is an admin
+            if IsAdmin == ('TRUE',): # If the database has the username entered as an admin
+                AuthenicationForAdmin = "True" # The program knows that a user is logged in
+            else:
+                AuthenicationForAdmin = "False" # Student is logged in
+        else: # If self.CorreectUser is empty, then
+            showerror("Error!", "Login Failed") # Show Pop Up Error Message
+            self.UsernameEntry.delete('0', END) # Clear form, in order for user to try again
+            self.PasswordEntry.delete('0', END)
+            return # back to inialise
+        if Authenication == "True" and AuthenicationForAdmin == "True": # If user is admin
+            showinfo("Success", ("You Are Logged In")) # Tell the user that they are logged in. This is because as soon as you log in, the window is destoryed and opened with a new one
+            FrameToBeShown = (UserManagement) # If user is a admin, then take user to Admin Choice page
+        elif Authenication == "True" and AuthenicationForAdmin == "False":
+            showinfo("Success", ("You Are Logged In"))
+            FrameToBeShown = (Student_Hub) # If the user is a student, take the user to the Student_Hub
+        conn.commit()
+        TLCAppMain(self) # Go to TLCAppMain, to destroy the frame and create the program
