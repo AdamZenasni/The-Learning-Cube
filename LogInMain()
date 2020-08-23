@@ -1,0 +1,3 @@
+def LogInMain():
+    app = LogIn()
+    app.mainloop() # Keeps the LogIn Page running, when it is initalised, it runs through the entire code and without this here it woul just continue through the rest of the program. Only LogIn an the next frame (TLCApp) need this because they have inherited a class from tkinter, whilst all the other classses inherit from tk.Frame from TLCApp
