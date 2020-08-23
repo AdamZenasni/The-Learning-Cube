@@ -1,0 +1,26 @@
+class Student_Hub(tk.Frame): # Inherits from the frame from TLCApp
+    def __init__(self, parent, controller):  # Here, the Parent is equal to the TLCApp, and the controller is "show frame", and it will be used later when I am bringing the frame forward
+        tk.Frame.__init__(self, parent) # Initalise the frame
+        ColourChosen = Appearance.GetUserColour(Appearance) # Gets the user colour from database
+        self.configure(background= ColourChosen) # Sets the background of the colour to the user's option that is saved in the database
+
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        TitleImageLabel = tk.Label(self, image=TitleImage, bg=ColourChosen)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(pady=10, padx=10, column=2) # Shows title
+
+        tk.Button(self, text="PLAY", fg="orange", height=3, width=50, command=lambda: controller.show_frame(ChoiceForGame)).grid(row=1, column=2)  # If button clicked, then ChoiceForGame will be raised to the top
+
+        tk.Button(self, text="CUSTOMISATION", fg="orange", height=3, width=50, command=lambda: controller.show_frame(     CustomisationChoice)).grid(row=3, column=2) # If button clicked, then CustomisationChoice will be raised to the top
+
+        tk.Button(self, text="MY ACCOUNT", fg="orange", height=3, width=50, command=lambda: controller.show_frame(MyAccountChoice)).grid(row=5, column=2) # If button clicked, then MyAccountChoice will be raised to the top
+
+        tk.Button(self, text="EXIT", fg="orange", height=3, width=50, command=self.quit).grid(row=7, column=2) # If button clicked, then CustomisationChoice will be raised to the top
+
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif")
+        LogoLabel1 = tk.Label(self, image=Logo, background=ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo, background=ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=3) # Logos are shown
