@@ -1,0 +1,31 @@
+class CustomisationChoice(tk.Frame):# Inherits from the frame from TLCApp
+    def __init__(self, parent, controller): # Parent is TLCApp, controller is "show frame".
+        tk.Frame.__init__(self, parent)
+        ColourChosen = Appearance.GetUserColour(Appearance)
+        self.configure(background= ColourChosen) # Gets User from query and sets the backgroun colour to that
+
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif") # Images
+        TitleImageLabel = tk.Label(self, image=TitleImage, bg=ColourChosen)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(pady=10, padx=10, column=1, columnspan=2)
+
+        AppearanceOption = tk.Button(self, text="APPEARANCE OF LEARNING CUBE", fg="orange", height=10, width=50,
+                                     command=lambda: controller.show_frame(Appearance))  # If button pressed takes user to the Appearance page
+        AppearanceOption.grid(row=3, column=1)
+        ChangeAvatarOption = tk.Button(self, text="CHANGE AVATAR", fg = "orange", height=10, width=50,
+                                       command=lambda: controller.show_frame(ProfilePicture))  # If button pressed takes user to where they can change their password
+        ChangeAvatarOption.grid(row=3, column=2)
+
+        ReturnButton = tk.Button(self, text = "RETURN", height = 3 , width = 50, command=lambda: controller.show_frame(Student_Hub))
+        ReturnButton.grid(row = 8, column = 1, pady = 50) # takes the user back to the Student Hub
+        tk.Button(self, text = "EXIT", height = 3 , width = 50, command= self.quit).grid(row = 8, column = 2, pady = 50)# quits the game
+
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif") # Logo's are shown
+        LogoLabel1 = tk.Label(self, image=Logo, background= ColourChosen)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo, background= ColourChosen)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=3)
+        
+        
