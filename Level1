@@ -1,0 +1,105 @@
+class Level1(tk.Frame):
+    def __init__(self, parent,controller):
+        tk.Frame.__init__(self,parent)
+        self.configure(background= "#a1dbcd")
+        self.parent = parent
+        self.Photo = tk.PhotoImage(file="JustTheLogo.gif")
+        photo = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        Title = tk.Label(self, image=photo, background="#a1dbcd")
+        Title.image = photo
+        Title.grid(row=0, column=1, columnspan=4)
+        Logo = tk.PhotoImage(file = r"JustTheLogo.gif")
+        LogoLabel1 = tk.Label(self, image = Logo, background = "#a1dbcd")
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row = 0, column = 0)
+        LogoLabel2 = tk.Label(self, image = Logo, background = "#a1dbcd")
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row = 0, column = 5)
+        LevelLabel = tk.Label(self, text=("THIS IS LEVEL ONE")
+                              ,font=REALLY_LARGE_FONT, bg = "#a1dbcd")
+        LevelLabel.grid(pady = 10, padx = 10, row = 1, column = 1, columnspan=4)
+        self.CardPlacers = [[tk.Button(self,command=lambda row=row, column=column: self.CardPicked(row, column,controller,parent),  width=14, height= 9)
+                        for column in range(4)] for row in range(3)]
+        for row in range(3):
+            for column in range(4):
+                self.CardPlacers[row][column].grid(row=row + 2, column=column + 1)
+        self.tobechecked = None
+        self.Attempts = 0
+        self.CreateCards()
+
+    def CreateCards(self):
+        answer = []
+        count = 0
+        self.CreatingAnswer(answer,count)
+        answer = [row for column in answer for row in column]
+        shuffle(answer)
+        self.AnswersBehindCard = answer[:4],answer[4:8],answer[8:12]
+        for row in self.CardPlacers:
+            for button in row:
+                button.config(fg="#a1dbcd", bg="#a1dbcd", state=tk.NORMAL)
+        self.start_time = time.time()
+
+    def CreatingAnswer(self, answer, count):
+        ListPlaceHolder = []
+        if not count < 6:
+            return
+        else:
+            number = (randint(0, 9))
+            number2 = (randint(0, 9))
+            answertobeaddedtolist = number + number2
+            numbertoaddtolist = (number, "+" , number2)
+            ListPlaceHolder.append(numbertoaddtolist)
+            ListPlaceHolder.append(answertobeaddedtolist)
+            self.CreatingAnswer(answer, count + 1)
+        answer.append(ListPlaceHolder)
+        return answer
+
+    def CardPicked(self, row, column,controller, parent):
+        self.CardPlacers[row][column].config(bg="white", text=(self.AnswersBehindCard[row][column]), font=HUGE_FONT, width=15,
+                                         height=10 , state=tk.DISABLED)  # equals the answer that is there
+        if not self.tobechecked:
+            self.tobechecked = row, column
+        else:
+            self.Attempts =  self.Attempts + 1
+            to, check = self.tobechecked
+            if isinstance(self.AnswersBehindCard[to][check], tuple):
+                FirstNumber = (self.AnswersBehindCard[to][check][0])
+                LastNumber = (self.AnswersBehindCard[to][check][2]) # orginally had sum but the addition meant that it didn't work. Had to slice the tuple to get the first and last elments, i.e the numbers that are going to be used.
+                AnswerToBeChecked = FirstNumber + LastNumber
+                if self.AnswersBehindCard[row][column] == AnswerToBeChecked:
+                    Validation = True
+                else:
+                    Validation = False
+            elif isinstance(self.AnswersBehindCard[row][column], tuple):
+                FirstNumber = (self.AnswersBehindCard[row][column][0])
+                SecondNumber = (self.AnswersBehindCard[row][column][2])
+                AnswerToBeChecked = FirstNumber + SecondNumber
+                if self.AnswersBehindCard[to][check] == AnswerToBeChecked:
+                    Validation = True
+                else:
+                    Validation = False
+            else:
+                Validation = False
+            self.Attempts = self.Attempts + 1 # if two sums were chose, 8+5 and 9+6, it would come here.
+            if Validation == True:
+                self.AnswersBehindCard[row][column] = ''
+                self.AnswersBehindCard[to][check] = '' # orignially had .pop but .pop will not work so had to replace with ""
+                if self.AnswersBehindCard == (['', '', '', ''], ['', '', '', ''], ['', '', '', '']):   # NEED TO FIX THIS; USE RECURSION
+                    self.stop_time = time.time()
+                    self.Time = 500 - (round(self.stop_time - self.start_time ,0))
+                    self.Score = round(self.Time // self.Attempts) * 8
+                    self.parent.after(4000, self.AddScoreToTable(controller))
+            else:
+                self.parent.after(1000, self.HideCards, row, column, to, check)
+            self.tobechecked = None
+
+    def HideCards(self, row, column, to, check):
+        self.CardPlacers[row][column].config(bg="#a1dbcd", state=tk.NORMAL)
+        self.CardPlacers[to][check].config(bg="#a1dbcd", state=tk.NORMAL)
+
+    def AddScoreToTable(self,controller):
+        c.execute('CREATE TABLE IF NOT EXISTS Level1Score (ID INTEGER PRIMARY KEY, Username TEXT, Lv1Score INTEGER)')
+        c.execute('INSERT INTO Level1Score (Username,Lv1Score) VALUES (?,?)', (Username, self.Score))
+        conn.commit()
+        showinfo("Score", ("Your Score Was", self.Score))
+        self.parent.after(1000, controller.show_frame(showLv4LeaderBoard))
