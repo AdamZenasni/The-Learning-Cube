@@ -1,0 +1,89 @@
+class Appearance(tk.Frame):
+    def __init__(self, parent,controller):
+        tk.Frame.__init__(self,parent)
+
+        TitleImage = tk.PhotoImage(file=r"The Learning CubeTitle.gif")
+        TitleImageLabel = tk.Label(self, image=TitleImage)
+        TitleImageLabel.image = TitleImage
+        TitleImageLabel.grid(pady=10, padx=10, column=1, columnspan=5)
+
+        self.var = tk.StringVar() # the variable is set, self.var is the variable that will change the colour, tk.StringVar is which button will be pressed.
+        DefaultColour = tk.Label(self, bg="#a1dbcd", height=5, width=10)
+        DefaultColour.grid(row=1, column=1)
+        DefaultColourChoice = tk.Radiobutton(self, text="Default", variable=self.var, value="#a1dbcd",
+                                             command=self.samplecolour)# if pressed, then the backgroun colour will instantly change to that colour
+        DefaultColourChoice.grid(row=2, column=1)
+
+        Black = tk.Label(self, bg="black", height=5, width=10)
+        Black.grid(row=1, column=2)
+        BlackChoice = tk.Radiobutton(self, text="Black", variable=self.var, value="Black", command=self.samplecolour)
+        BlackChoice.grid(row=2, column=2)
+
+        Red = tk.Label(self, bg="Red", height=5, width=10)
+        Red.grid(row=1, column=3)
+        RedChoice = tk.Radiobutton(self, text="Red", variable=self.var, value="Red", command=self.samplecolour)
+        RedChoice.grid(row=2, column=3)
+
+        Orange = tk.Label(self, bg="Orange", height=5, width=10)
+        Orange.grid(row=1, column=4)
+        OrangeChoice = tk.Radiobutton(self, text="Orange", variable=self.var, value="Orange", command=self.samplecolour)
+        OrangeChoice.grid(row=2, column=4)
+
+        Purple = tk.Label(self, bg="Purple", height=5, width=10)
+        Purple.grid(row=1, column=5)
+        PurpleChoice = tk.Radiobutton(self, text="Purple", variable=self.var, value="Purple", command=self.samplecolour)
+        PurpleChoice.grid(row=2, column=5)
+
+        Blue = tk.Label(self, bg="Blue", height=5, width=10)
+        Blue.grid(row=3, column=1)
+        BlueChoice = tk.Radiobutton(self, text="Blue", variable=self.var, value="Blue", command=self.samplecolour)
+        BlueChoice.grid(row=4, column=1)
+
+        Yellow = tk.Label(self, bg="Yellow", height=5, width=10)
+        Yellow.grid(row=3, column=2)
+        YellowChoice = tk.Radiobutton(self, text="Yellow", variable=self.var, value="Yellow", command=self.samplecolour)
+        YellowChoice.grid(row=4, column=2)
+
+        Pink = tk.Label(self, bg="Pink", height=5, width=10)
+        Pink.grid(row=3, column=3)
+        PinkChoice = tk.Radiobutton(self, text="Pink", variable=self.var, value="Pink", command=self.samplecolour)
+        PinkChoice.grid(row=4, column=3)
+
+        Green = tk.Label(self, bg="Green", height=5, width=10)
+        Green.grid(row=3, column=4)
+        GreenChoice = tk.Radiobutton(self, text="Green", variable=self.var, value="Green", command=self.samplecolour)
+        GreenChoice.grid(row=4, column=4)
+
+        White = tk.Label(self, bg="White", height=5, width=10)
+        White.grid(row=3, column=5)
+        WhiteChoice = tk.Radiobutton(self, text="White", variable=self.var, value="White", command=self.samplecolour)
+        WhiteChoice.grid(row=4, column=5)
+
+        Change = tk.Button(self, text="CHANGE", fg="orange", height=3, width=50, command=self.changecolour) # when button pressed that method will change the database
+        Change.grid(row=5, column=1, columnspan=5)
+
+        tk.Button(self, text = "RETURN", height = 3 , width = 50, command=lambda: controller.show_frame(CustomisationChoice)).grid(row = 8, column = 1, columnspan = 2) # RETURNS to Choice Option
+        tk.Button(self, text = "EXIT", height = 3 , width = 50, command= self.quit).grid(row = 8, column = 4, columnspan = 2) # QUITS
+
+        Logo = tk.PhotoImage(file=r"JustTheLogo.gif") # Logos Shown
+        LogoLabel1 = tk.Label(self, image=Logo)
+        LogoLabel1.image = Logo
+        LogoLabel1.grid(row=0, column=0)
+        LogoLabel2 = tk.Label(self, image=Logo)
+        LogoLabel2.image = Logo
+        LogoLabel2.grid(row=0, column=6)
+
+    def samplecolour(self):
+        self.ColourChosen = self.var.get() # the variable that was set earlier to the result of the radiobutton now
+        self.configure(background=self.ColourChosen) # equals Colour Chosen which will be the background until the next colour is pressed on.
+
+
+    def changecolour(self):
+        c.execute("UPDATE User_Information SET Colour_Chosen = (?) WHERE Username = (?)", (self.ColourChosen, Username)) # Changes it in the databasr, no validation is needed here, as the program is oing all of the inputs as supposed to giving the user control of what colour to type
+        conn.commit()
+
+    def GetUserColour(self): # THIS IS USED FOR OTHER CLASSES. Other classes call this method in order to get the
+        c.execute('SELECT Colour_Chosen FROM User_Information WHERE Username = ?', (Username,))#background colour of the
+        ColourChosen = c.fetchone()# User.
+        conn.commit()
+        return ColourChosen # returns the variable to wherever it was called from.
