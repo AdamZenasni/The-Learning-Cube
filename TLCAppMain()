@@ -1,0 +1,4 @@
+def TLCAppMain(self):
+    self.destroy()
+    app = TLCApp()
+    app.mainloop()
